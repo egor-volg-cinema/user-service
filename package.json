@@ -1,0 +1,9 @@
+{
+  "name": "user-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "cargo run",
+    "start:dev": "cargo run"
+  }
+}

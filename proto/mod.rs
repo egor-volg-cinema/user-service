@@ -6,4 +6,10 @@ pub mod auth {
         tonic::include_proto!("auth.v1");
     }
 }
+
+pub mod users {
+    pub mod v1 {
+        tonic::include_proto!("users.v1");
+    }
+}
  

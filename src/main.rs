@@ -1,10 +1,9 @@
-use tonic::transport::Channel;
-use crate::proto::auth::v1::auth_client::AuthClient;
+#[path = "../proto/mod.rs"]
+mod proto;
+mod grpc;
+mod repository;
+mod server;
 
-fn main() {
-    let grpc_host = std::env::var("GRPC_HOST").unwrap();
-    let grpc_port = std::env::var("GRPC_PORT").unwrap();
-    let channel = Channel::from_shared(format!("http://{}:{}", grpc_host, grpc_port)).unwrap();
-    let client = AuthClient::new(channel);
-
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    server::run()
 }
