@@ -3,8 +3,8 @@ use std::sync::Arc;
 use tonic::{Request, Response, Status};
 
 use crate::proto::users::v1::{
-    users_service_server::UsersService, CreateUserRequest, CreateUserResponse, GetMeRequest,
-    GetMeResponse, PatchUserRequest, PatchUserResponse, User as ProtoUser,
+    CreateUserRequest, CreateUserResponse, GetMeRequest, GetMeResponse, PatchUserRequest,
+    PatchUserResponse, User as ProtoUser, users_service_server::UsersService,
 };
 use crate::repository::db::{self, Database};
 
@@ -25,10 +25,10 @@ impl UsersService for UserService {
         &self,
         request: Request<GetMeRequest>,
     ) -> Result<Response<GetMeResponse>, Status> {
-        let id = parse_id(&request.into_inner().id)?;
+        let req = request.into_inner();
         let user = self
             .db
-            .get_user(id)
+            .get_user(req.id)
             .await
             .map_err(|e| Status::internal(e.to_string()))?
             .ok_or_else(|| Status::not_found("user not found"))?;
@@ -41,9 +41,9 @@ impl UsersService for UserService {
         &self,
         request: Request<CreateUserRequest>,
     ) -> Result<Response<CreateUserResponse>, Status> {
-        let id = parse_id(&request.into_inner().id)?;
+        let req = request.into_inner();
         self.db
-            .create_user(db::User::new(id, String::new(), String::new()))
+            .create_user(db::User::new(req.id, String::new(), String::new()))
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
         Ok(Response::new(CreateUserResponse { ok: true }))
@@ -54,18 +54,13 @@ impl UsersService for UserService {
         request: Request<PatchUserRequest>,
     ) -> Result<Response<PatchUserResponse>, Status> {
         let req = request.into_inner();
-        let id = parse_id(&req.user_id)?;
+
         self.db
-            .update_user(id, req.name, req.avatar)
+            .update_user(req.user_id, req.name, req.avatar)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
         Ok(Response::new(PatchUserResponse { ok: true }))
     }
-}
-
-fn parse_id(id: &str) -> Result<i32, Status> {
-    id.parse::<i32>()
-        .map_err(|_| Status::invalid_argument("invalid user id"))
 }
 
 impl From<db::User> for ProtoUser {

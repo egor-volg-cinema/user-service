@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::net::ToSocketAddrs;
 use std::sync::Arc;
 
 use tonic::transport::Server;
@@ -30,7 +30,11 @@ async fn serve() -> Result<(), Box<dyn std::error::Error>> {
 
     db.init().await?;
 
-    let addr: SocketAddr = format!("{grpc_host}:{grpc_port}").parse()?;
+    let grpc_port: u16 = grpc_port.parse()?;
+    let addr = (grpc_host.as_str(), grpc_port)
+        .to_socket_addrs()?
+        .next()
+        .ok_or("failed to resolve gRPC address")?;
     println!("gRPC server listening on {addr}");
 
     Server::builder()

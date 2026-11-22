@@ -7,7 +7,7 @@ pub struct Database {
 }
 
 pub struct User {
-    pub id: i32,
+    pub id: String,
     pub name: String,
     pub avatar: String,
     pub created_at: NaiveDateTime,
@@ -15,7 +15,7 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(id: i32, name: String, avatar: String) -> Self {
+    pub fn new(id: String, name: String, avatar: String) -> Self {
         Self {
             id,
             name,
@@ -43,14 +43,14 @@ impl Database {
     pub async fn init(&self) -> Result<(), tokio_postgres::Error> {
         self.client
             .execute(
-                "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, avatar TEXT, created_at TIMESTAMP, updated_at TIMESTAMP)",
+                "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT, avatar TEXT, created_at TIMESTAMP, updated_at TIMESTAMP)",
                 &[],
             )
             .await?;
         Ok(())
     }
 
-    pub async fn get_user(&self, id: i32) -> Result<Option<User>, tokio_postgres::Error> {
+    pub async fn get_user(&self, id: String) -> Result<Option<User>, tokio_postgres::Error> {
         let row = self
             .client
             .query_opt("SELECT * FROM users WHERE id = $1", &[&id])
@@ -77,7 +77,7 @@ impl Database {
 
     pub async fn update_user(
         &self,
-        id: i32,
+        id: String,
         name: Option<String>,
         avatar: Option<String>,
     ) -> Result<u64, tokio_postgres::Error> {
