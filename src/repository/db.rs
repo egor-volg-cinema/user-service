@@ -1,4 +1,4 @@
-use chrono::{self, NaiveDateTime, Utc};
+use chrono::Utc;
 use tokio_postgres::tls::NoTlsStream;
 use tokio_postgres::{Client, NoTls};
 
@@ -10,8 +10,6 @@ pub struct User {
     pub id: String,
     pub name: String,
     pub avatar: String,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
 }
 
 impl User {
@@ -20,8 +18,6 @@ impl User {
             id,
             name,
             avatar,
-            created_at: Utc::now().naive_utc(),
-            updated_at: Utc::now().naive_utc(),
         }
     }
 }
@@ -53,14 +49,12 @@ impl Database {
     pub async fn get_user(&self, id: String) -> Result<Option<User>, tokio_postgres::Error> {
         let row = self
             .client
-            .query_opt("SELECT * FROM users WHERE id = $1", &[&id])
+            .query_opt("SELECT id, name, avatar FROM users WHERE id = $1", &[&id])
             .await?;
         Ok(row.map(|r| User {
             id: r.get(0),
             name: r.get(1),
             avatar: r.get(2),
-            created_at: r.get(3),
-            updated_at: r.get(4),
         }))
     }
 

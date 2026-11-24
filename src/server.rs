@@ -38,7 +38,7 @@ async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     println!("gRPC server listening on {addr}");
 
     Server::builder()
-        .add_service(UsersServiceServer::new(UserService::new(Arc::new(db))))
+        .add_service(UsersServiceServer::new(UserService::new(Arc::new(db))?))
         .serve(addr)
         .await?;
 

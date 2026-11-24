@@ -5,6 +5,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     unsafe { std::env::set_var("PROTOC", protoc); }
 
     // 2. Пересобирать build.rs при изменении .proto.
+    println!("cargo:rerun-if-changed=proto/account.proto");
     println!("cargo:rerun-if-changed=proto/auth.proto");
     println!("cargo:rerun-if-changed=proto/users.proto");
 
@@ -12,7 +13,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     tonic_prost_build::configure()
         .build_client(true)
         .build_server(true)
-        .compile_protos(&["proto/auth.proto", "proto/users.proto"], &["proto/"])?;
+        .compile_protos(
+            &["proto/account.proto", "proto/auth.proto", "proto/users.proto"],
+            &["proto/"],
+        )?;
 
     Ok(())
 }
