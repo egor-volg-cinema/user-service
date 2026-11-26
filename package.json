@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "cargo run",
-    "start:dev": "cargo run"
+    "start:dev": "cross-env APP_ENV=dev cargo run",
+    "start:prod": "cross-env APP_ENV=prod cargo run"
   }
 }

@@ -1,0 +1,17 @@
+services:
+    users-service:
+        container_name: users-service
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: always
+        env_file:
+            - .env.prod.local
+        ports:
+            - '50551:50551'
+        networks:
+            - cinema-network
+networks:
+    cinema-network:
+        external: true
+        name: docker_cinema-network
