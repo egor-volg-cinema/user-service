@@ -1,6 +1,7 @@
 services:
     users-service:
         container_name: users-service
+        image: egorcolg/users-service:dev
         build:
             context: .
             dockerfile: Dockerfile
